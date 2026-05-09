@@ -10,6 +10,20 @@ async function generateInterviewRep(req,res) {
     
     const aiReport = await generateInterviewReport({selfDescription, jobDescription, resume:resumeData.text});
 
+    if (aiReport.skillGaps) {
+
+    aiReport.skillGaps = aiReport.skillGaps.map(gap => ({
+
+        ...gap,
+
+        severity: gap.severity.toLowerCase().trim()
+
+    }));
+}
+
+
+console.log(aiReport.skillGaps);
+
     const interviewReport = await interviewReportModel.create({
          
         user: req.user.id, 

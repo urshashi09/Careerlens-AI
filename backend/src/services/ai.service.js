@@ -1,74 +1,137 @@
-const {GoogleGenAI}= require("@google/genai"); 
-const {z} = require("zod");
-const {zodToJsonSchema} = require("zod-to-json-schema");
+const { GoogleGenAI, Type } = require("@google/genai");
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
-// async function invokeGenAI(prompt) {
-//     const response = await ai.models.generateContent({
-//         model: "gemini-2.5-flash",
-//         contents: "hello explain global warming"
-//     });
-//     console.log(response.text);
-    
-// }
+async function generateInterviewReport({
+    selfDescription,
+    resume,
+    jobDescription
+}) {
 
+    const prompt = `
+Generate an interview report for a candidate.
 
-const interviewReportSchema= z.object({
+JOB DESCRIPTION:
+${jobDescription}
 
-    matchScore: z.number().min(0).max(100).describe("how well the candidate fits in the job description, based on the technical and behavioral questions asked in the interview"),
+RESUME:
+${resume}
 
-    technicalQuestions: z.array(z.object({
-        question: z.string().describe("Technical question that can be asked to the candidate in interview"),
-        answer: z.string().describe("how the candidate should answer the question, what points to consider, what approach to take etc"),
-        intention: z.string().describe("intention of the interviewer behind the question ")
-    })).describe("technical questions that can be asked to the candidate in interview along with the answer and the intention of the interviewer behind the question"),
+SELF DESCRIPTION:
+${selfDescription}
 
-    behavioralQuestions: z.array(z.object({
-        question: z.string().describe("Behavioral question that can be asked to the candidate in interview"),
-        answer: z.string().describe("how the candidate should answer the question, what points to consider, what approach to take etc"),
-        intention: z.string().describe("intention of the interviewer behind the question ")
-    })).describe("behavioral questions that can be asked to the candidate in interview along with the answer and the intention of the interviewer behind the question"),
-
-
-    skillGaps: z.array(z.object({
-        skill: z.string().describe("skill that the candidate is missing"),
-        severity: z.enum(["low", "medium", "high"]).describe("severity of the skill gap, how important is the skill for the job")
-    })).describe("skill gaps that the candidate is missing along with the severity of the skill gap, how important is the skill for the job"),
-
-
-    preperationPlan: z.array(z.object({
-        day: z.string().describe("day number in the preperation plan, starting from day 1"),
-        focus: z.string().describe("main focus of the day in the preperation plan, what should the candidate focus on example: data structures or nodejs"),
-        tasks: z.array(z.string()).describe("list of tasks for the day to follow in order to prepare for the interview")
-    })).describe("preperation plan for the candidate to prepare for the interview along with the day number, main focus of the day and list of tasks for the day to follow in order to prepare for the interview"),
-
-
-})
-
-
-
-async function generateInterviewReport({selfDescription, resume, jobDescription}){
-
-
-    const prompt = `Generate an interview report for a job application based on the following information:
-    Job Description: ${jobDescription}
-    Resume: ${resume}
-    Self Description: ${selfDescription}`
+Instructions:
+- Generate at least 5 technical questions
+- Generate at least 3 behavioral questions
+- Generate realistic skill gaps
+- Generate a 7-day preparation plan
+- Match score should be between 0 and 100
+- Return ONLY valid JSON
+`;
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
-        config:{
-            responseMimeType:"application/json",
-            responseSchema: zodToJsonSchema(interviewReportSchema)
+
+        config: {
+
+            responseMimeType: "application/json",
+
+            responseSchema: {
+
+                type: Type.OBJECT,
+
+                properties: {
+
+                    matchScore: {
+                        type: Type.NUMBER
+                    },
+
+                    technicalQuestions: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                question: {
+                                    type: Type.STRING
+                                },
+                                answer: {
+                                    type: Type.STRING
+                                },
+                                intention: {
+                                    type: Type.STRING
+                                }
+                            }
+                        }
+                    },
+
+                    behavioralQuestions: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                question: {
+                                    type: Type.STRING
+                                },
+                                answer: {
+                                    type: Type.STRING
+                                },
+                                intention: {
+                                    type: Type.STRING
+                                }
+                            }
+                        }
+                    },
+
+                    skillGaps: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                skill: {
+                                    type: Type.STRING
+                                },
+                                severity: {
+                                    type: Type.STRING
+                                }
+                            }
+                        }
+                    },
+
+                    preperationPlan: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                day: {
+                                    type: Type.STRING
+                                },
+                                focus: {
+                                    type: Type.STRING
+                                },
+                                tasks: {
+                                    type: Type.ARRAY,
+                                    items: {
+                                        type: Type.STRING
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
         }
+
     });
 
-  return JSON.parse(response.text);
-    
+    console.log(response.text);
+
+    return JSON.parse(response.text);
 }
 
-module.exports = { generateInterviewReport}
+module.exports = { generateInterviewReport };
