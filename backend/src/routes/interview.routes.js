@@ -11,3 +11,6 @@ const upload = require('../middleware/file.middleware');
  * @access Private
  */
 interviewRouter.post("/interview", authCheck, upload.single('resume'), generateInterviewRep)
+
+
+module.exports = interviewRouter

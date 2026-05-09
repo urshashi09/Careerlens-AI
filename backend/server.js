@@ -1,5 +1,7 @@
-const app= require('./src/app.js');
 require('dotenv').config();
+
+const app= require('./src/app.js');
+
 const connect= require('./src/config/db.js');
 connect();
 

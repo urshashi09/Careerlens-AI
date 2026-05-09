@@ -5,7 +5,7 @@ const interviewReportModel = require('../model/interviewRep.model');
 async function generateInterviewRep(req,res) {
     const resume =req.file
 
-    const resumeData = await (new pdfParse.PDFParse(Uint8Array.from(resume.file.buffer))).getText();
+    const resumeData = await (new pdfParse.PDFParse(Uint8Array.from(resume.buffer))).getText();
     const {selfDescription, jobDescription}= req.body;
     
     const aiReport = await generateInterviewReport({selfDescription, jobDescription, resume:resumeData.text});

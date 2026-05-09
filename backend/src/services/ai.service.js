@@ -3,7 +3,7 @@ const {z} = require("zod");
 const {zodToJsonSchema} = require("zod-to-json-schema");
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.GEMINI_API_KEY
 });
 
 // async function invokeGenAI(prompt) {
@@ -60,7 +60,7 @@ async function generateInterviewReport({selfDescription, resume, jobDescription}
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: "prompt",
+        contents: prompt,
         config:{
             responseMimeType:"application/json",
             responseSchema: zodToJsonSchema(interviewReportSchema)
