@@ -44,6 +44,9 @@ Instructions:
                 type: Type.OBJECT,
 
                 properties: {
+                    jobTitle: {
+                        type: Type.STRING
+                    },
 
                     matchScore: {
                         type: Type.NUMBER

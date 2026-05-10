@@ -1,7 +1,37 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import "../styles/home.scss"
+import { useReport } from '../hooks/useReport';
+import {useNavigate} from "react-router-dom"
 
 const Home = () => {
+
+    const {loading, handleGenerateReport}= useReport()
+    const [jobDescription, setJobDescription] = useState('');
+    const [selfDescription, setSelfDescription] = useState('');
+    const resumeRef = useRef(null);
+    const navigate = useNavigate();
+
+    const handleSubmit = async () => {
+        const resumeFile = resumeRef.current?.files?.[0];
+        
+        if (!resumeFile || !jobDescription || !selfDescription) {
+            alert("Please fill in the Job Description, Self Description, and upload a Resume (PDF) before generating the report.");
+            return;
+        }
+
+        try {
+            const reportData = await handleGenerateReport(jobDescription, selfDescription, resumeFile);
+            if (reportData && (reportData._id || reportData.id)) {
+                const id = reportData._id || reportData.id;
+                navigate(`/report/${id}`);
+            } else {
+                alert("Failed to generate report or missing ID from server. Please check the backend console for errors.");
+            }
+        } catch (error) {
+            alert("An error occurred while communicating with the server.");
+        }
+    }
+
     const [fileName, setFileName] = useState("");
 
     const handleFileChange = (e) => {
@@ -12,6 +42,16 @@ const Home = () => {
             setFileName("");
         }
     };
+
+    if(loading){
+        return (
+            <main>
+                <h1>Loading.....</h1>
+            </main>
+        )
+    }
+
+
     return (
         <main className='home'>
             <div className="background-shapes">
@@ -30,13 +70,13 @@ const Home = () => {
                     <div className='left'>
                         <div className="input-group full-height">
                             <label htmlFor="jobDescription">Job Description</label>
-                            <textarea name="jobDescription" id="jobDescription" placeholder='Enter the job description...'></textarea>
+                            <textarea onChange={(e)=>{setJobDescription(e.target.value)}} name="jobDescription" id="jobDescription" placeholder='Enter the job description...'></textarea>
                         </div>
                     </div>
                     <div className='right'>
                         <div className='input-group full-height'>
                             <label htmlFor="selfDescription">Self Description</label>
-                            <textarea name="selfDescription" id='selfDescription' placeholder='Describe yourself...'></textarea>
+                            <textarea onChange={(e)=> {setSelfDescription(e.target.value)}} name="selfDescription" id='selfDescription' placeholder='Describe yourself...'></textarea>
                         </div>
                         <div className='input-group upload-group'>
                             <label className={`file-label ${fileName ? 'has-file' : ''}`} htmlFor="resume">
@@ -47,13 +87,15 @@ const Home = () => {
                                 )}
                                 <span>{fileName ? fileName : "Upload Resume PDF"}</span>
                             </label>
-                            <input hidden type="file" name='resume' id='resume' accept='.pdf' onChange={handleFileChange} />
+                            <input ref={resumeRef} hidden type="file" name='resume' id='resume' accept='.pdf' onChange={handleFileChange} />
                         </div>
                     </div>
                 </div>
                 
                 <div className="action-section">
-                    <button className='button primary-button'>Generate Report</button>
+                    <button 
+                    onClick={handleSubmit}
+                    className='button primary-button'>Generate Report</button>
                 </div>
             </div>
         </main>
