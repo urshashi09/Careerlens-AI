@@ -4,6 +4,129 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
+const PRIMARY_MODEL = "gemini-2.5-flash";
+const FALLBACK_MODEL = "gemini-2.5-flash-lite";
+
+function shouldUseFallback(error) {
+    return error?.status === 503 || error?.error?.status === "UNAVAILABLE";
+}
+
+function getResponseConfig() {
+    return {
+        responseMimeType: "application/json",
+
+        responseSchema: {
+
+            type: Type.OBJECT,
+
+            properties: {
+                jobTitle: {
+                    type: Type.STRING
+                },
+
+                matchScore: {
+                    type: Type.NUMBER
+                },
+
+                technicalQuestions: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            question: {
+                                type: Type.STRING
+                            },
+                            answer: {
+                                type: Type.STRING
+                            },
+                            intention: {
+                                type: Type.STRING
+                            }
+                        }
+                    }
+                },
+
+                behavioralQuestions: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            question: {
+                                type: Type.STRING
+                            },
+                            answer: {
+                                type: Type.STRING
+                            },
+                            intention: {
+                                type: Type.STRING
+                            }
+                        }
+                    }
+                },
+
+                skillGaps: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            skill: {
+                                type: Type.STRING
+                            },
+                            severity: {
+                                type: Type.STRING,
+                                enum: ["low", "medium", "high"]
+                            }
+                        }
+                    }
+                },
+
+                preperationPlan: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            day: {
+                                type: Type.STRING
+                            },
+                            focus: {
+                                type: Type.STRING
+                            },
+                            tasks: {
+                                type: Type.ARRAY,
+                                items: {
+                                    type: Type.STRING
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+}
+
+async function generateContentWithFallback(prompt) {
+    try {
+        return await ai.models.generateContent({
+            model: PRIMARY_MODEL,
+            contents: prompt,
+            config: getResponseConfig()
+        });
+    } catch (error) {
+        if (!shouldUseFallback(error)) {
+            throw error;
+        }
+
+        console.warn(`${PRIMARY_MODEL} unavailable, retrying with ${FALLBACK_MODEL}`);
+
+        return ai.models.generateContent({
+            model: FALLBACK_MODEL,
+            contents: prompt,
+            config: getResponseConfig()
+        });
+    }
+}
+
 async function generateInterviewReport({
     selfDescription,
     resume,
@@ -65,107 +188,7 @@ IMPORTANT INSTRUCTIONS:
 - Do not include markdown.
 `;
 
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-
-        config: {
-
-            responseMimeType: "application/json",
-
-            responseSchema: {
-
-                type: Type.OBJECT,
-
-                properties: {
-                    jobTitle: {
-                        type: Type.STRING
-                    },
-
-                    matchScore: {
-                        type: Type.NUMBER
-                    },
-
-                    technicalQuestions: {
-                        type: Type.ARRAY,
-                        items: {
-                            type: Type.OBJECT,
-                            properties: {
-                                question: {
-                                    type: Type.STRING
-                                },
-                                answer: {
-                                    type: Type.STRING
-                                },
-                                intention: {
-                                    type: Type.STRING
-                                }
-                            }
-                        }
-                    },
-
-                    behavioralQuestions: {
-                        type: Type.ARRAY,
-                        items: {
-                            type: Type.OBJECT,
-                            properties: {
-                                question: {
-                                    type: Type.STRING
-                                },
-                                answer: {
-                                    type: Type.STRING
-                                },
-                                intention: {
-                                    type: Type.STRING
-                                }
-                            }
-                        }
-                    },
-
-                    skillGaps: {
-                        type: Type.ARRAY,
-                        items: {
-                            type: Type.OBJECT,
-                            properties: {
-                                skill: {
-                                    type: Type.STRING
-                                },
-                                severity: {
-                                    type: Type.STRING,
-                                    enum: ["low", "medium", "high"]
-                                }
-                            }
-                        }
-                    },
-
-                    preperationPlan: {
-                        type: Type.ARRAY,
-                        items: {
-                            type: Type.OBJECT,
-                            properties: {
-                                day: {
-                                    type: Type.STRING
-                                },
-                                focus: {
-                                    type: Type.STRING
-                                },
-                                tasks: {
-                                    type: Type.ARRAY,
-                                    items: {
-                                        type: Type.STRING
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-    });
+    const response = await generateContentWithFallback(prompt);
 
     console.log(response.text);
 
