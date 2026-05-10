@@ -10,8 +10,10 @@ async function generateInterviewReport({
     jobDescription
 }) {
 
-    const prompt = `
-Generate an interview report for a candidate.
+    const prompt =`
+You are an expert technical interviewer, hiring manager, and career coach.
+
+Analyze the candidate using:
 
 JOB DESCRIPTION:
 ${jobDescription}
@@ -22,13 +24,45 @@ ${resume}
 SELF DESCRIPTION:
 ${selfDescription}
 
-Instructions:
-- Generate at least 5 technical questions
-- Generate at least 3 behavioral questions
-- Generate realistic skill gaps
-- Generate a 7-day preparation plan
-- Match score should be between 0 and 100
-- Return ONLY valid JSON
+Generate a complete interview preparation report.
+
+IMPORTANT INSTRUCTIONS:
+
+1. Match Score
+- Give a realistic match score between 0 and 100.
+- Consider technical skills, experience, projects, communication, and role fit.
+
+2. Technical Questions
+- Generate at least 5 technical interview questions relevant to the job role.
+- Questions should match the candidate's current level.
+- The "answer" field must contain an IDEAL SAMPLE ANSWER.
+- The answer should teach the candidate how to respond professionally in interviews.
+- Even if the candidate lacks the skill, provide a beginner-friendly educational answer.
+- The "intention" field should explain why the interviewer asks the question.
+
+3. Behavioral Questions
+- Generate at least 3 behavioral interview questions.
+- Answers should follow professional interview communication style.
+- Use STAR-method style answers when appropriate.
+
+4. Skill Gaps
+- Generate realistic missing skills or weak areas.
+- Severity must ONLY be one of:
+  - "low"
+  - "medium"
+  - "high"
+
+5. Preparation Plan
+- Generate a structured 7-day preparation roadmap.
+- Each day should include:
+  - focus area
+  - actionable tasks
+  - interview preparation activities
+
+6. General Rules
+- Answers should be concise, practical, and educational.
+- Return ONLY valid JSON.
+- Do not include markdown.
 `;
 
     const response = await ai.models.generateContent({
@@ -97,7 +131,8 @@ Instructions:
                                     type: Type.STRING
                                 },
                                 severity: {
-                                    type: Type.STRING
+                                    type: Type.STRING,
+                                    enum: ["low", "medium", "high"]
                                 }
                             }
                         }

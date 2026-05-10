@@ -2,6 +2,15 @@ const pdfParse = require('pdf-parse');
 const {generateInterviewReport} = require('../services/ai.service');
 const interviewReportModel = require('../model/interviewRep.model');
 
+function normalizeSkillGapSeverity(severity) {
+    const normalizedSeverity = String(severity || 'low').toLowerCase().trim();
+
+    if (normalizedSeverity === 'critical') return 'high';
+    if (['low', 'medium', 'high'].includes(normalizedSeverity)) return normalizedSeverity;
+
+    return 'low';
+}
+
 async function generateInterviewRep(req,res) {
     try {
         const resume = req.file;
@@ -17,7 +26,7 @@ async function generateInterviewRep(req,res) {
         if (aiReport && aiReport.skillGaps) {
             aiReport.skillGaps = aiReport.skillGaps.map(gap => ({
                 ...gap,
-                severity: gap.severity ? gap.severity.toLowerCase().trim() : 'low'
+                severity: normalizeSkillGapSeverity(gap.severity)
             }));
         }
 
@@ -29,6 +38,10 @@ async function generateInterviewRep(req,res) {
             title: aiReport.jobTitle || 'Interview Report',
             ...aiReport,
         });
+
+        if (!interviewReport?._id) {
+            return res.status(500).json({ message: 'Report generated but no report ID was returned' });
+        }
 
         res.status(201).json({message: 'Report generated successfully', report: interviewReport});
     } catch (error) {

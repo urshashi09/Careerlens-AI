@@ -1,4 +1,4 @@
-.home {
+.all-reports {
     width: 100%;
     min-height: 100vh;
     padding: calc(76px + 2rem) 1.5rem 2rem;
@@ -74,7 +74,6 @@
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         border-radius: 24px;
         padding: 2.5rem;
-        
         display: flex;
         flex-direction: column;
         gap: 2rem;
@@ -102,135 +101,55 @@
         }
     }
 
-    .content-section {
-        display: flex;
-        gap: 2rem;
-        flex: 1;
-    }
-
-    .left, .right {
+    .reports-list {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
-        width: 50%;
-    }
-
-    .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        &.full-height {
-            flex: 1;
+        gap: 1rem;
+        padding: 1rem 0;
+        
+        .empty-text {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-top: 2rem;
         }
 
-        label {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            margin-left: 0.25rem;
-        }
-
-        textarea {
-            flex: 1;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1.25rem;
-            color: #f8fafc;
-            font-size: 1rem;
-            line-height: 1.5;
-            resize: none;
-            transition: all 0.3s ease;
-
-            &::placeholder {
-                color: rgba(255, 255, 255, 0.3);
-            }
-
-            &:focus {
-                outline: none;
-                border-color: rgba(168, 85, 247, 0.5);
-                background: rgba(0, 0, 0, 0.3);
-                box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
-            }
-        }
-    }
-
-    .upload-group {
-        .file-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 1.25rem;
+        .report-card {
             background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            color: rgba(255, 255, 255, 0.8);
-            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
             transition: all 0.3s ease;
-            font-weight: 500;
 
-            svg {
-                color: #a855f7;
-                transition: transform 0.3s ease;
+            h3 {
+                color: #ffffff;
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin: 0;
+            }
+
+            .date {
+                color: rgba(255, 255, 255, 0.5);
+                font-size: 0.9rem;
+                margin: 0;
             }
 
             &:hover {
-                background: rgba(255, 255, 255, 0.1);
+                background: rgba(168, 85, 247, 0.1);
                 border-color: rgba(168, 85, 247, 0.5);
-                color: #fff;
-
-                svg {
-                    transform: translateY(-2px);
-                }
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5);
             }
-
-            &.has-file {
-                border-style: solid;
-                border-color: #10b981;
-                background: rgba(16, 185, 129, 0.1);
-                color: #fff;
-                
-                svg {
-                    color: #10b981;
-                }
-            }
-        }
-    }
-
-    .action-section {
-        display: flex;
-        justify-content: center;
-        margin-top: 1rem;
-    }
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-    .home {
-        .content-section {
-            flex-direction: column;
-        }
-        
-        .left, .right {
-            width: 100%;
-        }
-
-        .glass-container {
-            padding: 1.5rem;
-            margin: 1rem;
-        }
-
-        .title-section h1 {
-            font-size: 2rem;
         }
     }
 }
 
 @media (max-width: 768px) {
-    .home {
+    .all-reports {
         padding-top: calc(84px + 1.5rem);
     }
 }

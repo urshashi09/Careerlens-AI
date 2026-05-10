@@ -1,7 +1,10 @@
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import "../styles/home.scss"
 import { useReport } from '../hooks/useReport';
 import {useNavigate} from "react-router-dom"
+
+import Navbar from '../components/Navbar';
+import LoadingScreen from '../../../components/LoadingScreen';
 
 const Home = () => {
 
@@ -28,7 +31,7 @@ const Home = () => {
                 alert("Failed to generate report or missing ID from server. Please check the backend console for errors.");
             }
         } catch (error) {
-            alert("An error occurred while communicating with the server.");
+            console.error(error);
         }
     }
 
@@ -44,16 +47,13 @@ const Home = () => {
     };
 
     if(loading){
-        return (
-            <main>
-                <h1>Loading.....</h1>
-            </main>
-        )
+        return <LoadingScreen message="Generating your interview report" />
     }
 
 
     return (
         <main className='home'>
+            <Navbar />
             <div className="background-shapes">
                 <div className="shape shape-1"></div>
                 <div className="shape shape-2"></div>

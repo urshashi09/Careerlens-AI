@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useMemo, useState } from 'react'
 import '../styles/finalReport.scss'
 import { Code, MessageSquare, Map } from 'lucide-react'
 import { useReport } from '../hooks/useReport'
-import { useNavigate, useParams } from 'react-router'
+import Navbar from '../components/Navbar'
+import LoadingScreen from '../../../components/LoadingScreen'
 
 
 
@@ -15,8 +16,7 @@ const tabItems = [
 const FinalReport = () => {
   const [activeTab, setActiveTab] = useState('technical')
   const [expandedId, setExpandedId] = useState(null)
-  const { report, getReportById, loading } = useReport()
-  const {interviewId} = useParams();
+  const { report, loading } = useReport()
 
   
 
@@ -25,11 +25,11 @@ const FinalReport = () => {
     [activeTab]
   )
 
-  const toggleAccordion = (index) => {
+  const toggleAccordion = useCallback((index) => {
     setExpandedId(expandedId === index ? null : index)
-  }
+  }, [expandedId])
 
-  const renderQuestions = (questions) => {
+  const renderQuestions = useCallback((questions) => {
     return questions.map((item, index) => (
       <article 
         key={index} 
@@ -59,7 +59,7 @@ const FinalReport = () => {
         )}
       </article>
     ))
-  }
+  }, [expandedId, toggleAccordion])
 
   const activeContent = useMemo(() => {
     if (!report) return null;
@@ -84,14 +84,10 @@ const FinalReport = () => {
         </div>
       </article>
     ))
-  }, [activeTab, expandedId, report])
+  }, [activeTab, report, renderQuestions])
 
   if(loading || !report) {
-    return (
-      <main>
-        <h1>Loading report.....</h1>
-      </main>
-    )
+    return <LoadingScreen message="Loading your report" />
   }
 
   const sectionCount = {
@@ -100,10 +96,14 @@ const FinalReport = () => {
     roadmap: report.preperationPlan?.length || 0,
   }
 
+  const matchScore = Math.max(0, Math.min(100, Number(report.matchScore) || 0))
+  const scoreTone = matchScore < 40 ? 'low' : matchScore < 70 ? 'medium' : 'high'
+
   
 
   return (
     <main className="final-report">
+      <Navbar />
       <div className="background-shapes">
         <div className="shape shape-1"></div>
         <div className="shape shape-2"></div>
@@ -134,7 +134,9 @@ const FinalReport = () => {
           <section className="main-panel">
             <div className="main-heading">
               <h2>{activeLabel}</h2>
-              <span className="question-count">{sectionCount[activeTab]} questions</span>
+              {activeTab !== 'roadmap' && (
+                <span className="question-count">{sectionCount[activeTab]} questions</span>
+              )}
             </div>
             <div className="main-content">{activeContent}</div>
           </section>
@@ -143,10 +145,12 @@ const FinalReport = () => {
             <div className="score-section">
               <div className="sidebar-title">Match Score</div>
               <div className="score-card">
-                <div className="score-ring">
-                  <span>{report.matchScore}<small style={{fontSize: '1rem'}}>%</small></span>
+                <div
+                  className={`score-ring ${scoreTone}`}
+                  style={{ '--score-value': `${matchScore}%` }}
+                >
+                  <span>{matchScore}<small>%</small></span>
                 </div>
-                <div className="score-copy">Strong match for this role</div>
               </div>
             </div>
 
@@ -156,10 +160,10 @@ const FinalReport = () => {
                 {(report.skillGaps || []).map((item) => (
                   <div key={item.skill} className={`skill-pill ${item.color || 'blue'}`}>
                     {item.skill.split('\n').map((line, i) => (
-                      <React.Fragment key={i}>
+                      <Fragment key={i}>
                         {line}
                         {i === 0 && item.skill.includes('\n') && <br/>}
-                      </React.Fragment>
+                      </Fragment>
                     ))}
                   </div>
                 ))}

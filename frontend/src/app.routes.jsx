@@ -2,9 +2,9 @@ import {createBrowserRouter} from "react-router-dom";
 import Login from "./features/auth/pages/Login.jsx";
 import Register from "./features/auth/pages/Register.jsx";
 import Protected from "./features/auth/components/Protected.jsx";
-import Home from "./features/report/pages/home.jsx";
+import Home from "./features/report/pages/Home.jsx";
 import FinalReport from "./features/report/pages/FinalReport.jsx";
-
+import AllReports from "./features/report/pages/AllReports.jsx";
 
 export const router= createBrowserRouter([
     {
@@ -19,7 +19,10 @@ export const router= createBrowserRouter([
         path: "/",
   element: <Protected><Home/></Protected>,
     },
-
+    {
+        path: "/reports",
+        element: <Protected><AllReports/></Protected>,
+    },
     {
         path:"/report/:interviewId",
         element: <Protected><FinalReport/></Protected>,

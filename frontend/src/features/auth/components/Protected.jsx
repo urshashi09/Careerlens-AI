@@ -1,6 +1,6 @@
 import {useAuth} from "../hooks/useAuth";
 import { Navigate } from "react-router-dom";
-import React from 'react'
+import LoadingScreen from "../../../components/LoadingScreen";
 
 const Protected = ({children}) => {
 
@@ -8,11 +8,7 @@ const Protected = ({children}) => {
     
 
     if(loading ) {
-        return (
-            <main>
-                <h1>Loading.....</h1>
-            </main>
-        )
+        return <LoadingScreen message="Checking your session" />
     }
 
     if(!user) {

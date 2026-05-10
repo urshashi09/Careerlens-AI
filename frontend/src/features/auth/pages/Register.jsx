@@ -1,7 +1,8 @@
-import React from 'react'
 import {Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import "../auth.form.scss"
+import LoadingScreen from '../../../components/LoadingScreen'
 
 const Register = () => {
 
@@ -11,7 +12,7 @@ const Register = () => {
   const [password, setpassword] = useState("")
 
 
-  const {loading, setLoading, handleRegister} = useAuth()
+  const {loading, handleRegister} = useAuth()
 
   const handleSubmit=async (e)=>{
     e.preventDefault()
@@ -20,17 +21,23 @@ const Register = () => {
   }
 
   if(loading){
-    return (
-      <main>
-        <h1>Loading.....</h1>
-      </main>
-    )
+    return <LoadingScreen message="Creating your account" />
   }
 
   return (
-    <main>
-      <div className="form-container">
-        <h1>Register</h1>
+    <main className="auth-page">
+      <div className="background-shapes">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+      </div>
+
+      <div className="form-container glass-container">
+        <Link to="/" className="auth-logo">Careerlens AI</Link>
+        <div className="auth-heading">
+          <h1>Create account</h1>
+          <p>Start generating tailored interview reports.</p>
+        </div>
         <form onSubmit={handleSubmit} >
 
           <div className="input-group">
@@ -55,7 +62,7 @@ const Register = () => {
           <button className='button primary-button' >Register</button>
         </form>
 
-        <p>Already have an account? <Link to="/login" >Login</Link></p>
+        <p className="auth-switch">Already have an account? <Link to="/login" >Login</Link></p>
       </div>
     </main>
   )

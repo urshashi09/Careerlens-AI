@@ -1,14 +1,14 @@
 /* finalReport.scss */
 .final-report {
   min-height: 100vh;
-  padding: 2rem;
+  padding: calc(76px + 2rem) 2rem 2rem;
   background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   position: relative;
-  overflow: hidden;
+  overflow: hidden auto;
 
   .background-shapes {
     position: absolute;
@@ -321,7 +321,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 16px;
@@ -329,20 +328,35 @@
 }
 
 .score-ring {
+  --score-color: #10b981;
+  --score-track: rgba(16, 185, 129, 0.12);
+
   width: 110px;
   height: 110px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  border: 6px solid rgba(16, 185, 129, 0.1);
-  border-top-color: #10b981; 
-  border-right-color: #10b981;
-  border-bottom-color: #10b981;
-  transform: rotate(-45deg); 
-  box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.1), 0 0 15px rgba(16, 185, 129, 0.2);
+  background:
+    radial-gradient(circle at center, #1b1d36 0 58%, transparent 59%),
+    conic-gradient(var(--score-color) var(--score-value), var(--score-track) 0);
+  box-shadow: inset 0 0 15px var(--score-track), 0 0 18px rgba(0, 0, 0, 0.22);
+
+  &.low {
+    --score-color: #ef4444;
+    --score-track: rgba(239, 68, 68, 0.14);
+  }
+
+  &.medium {
+    --score-color: #f59e0b;
+    --score-track: rgba(245, 158, 11, 0.16);
+  }
+
+  &.high {
+    --score-color: #10b981;
+    --score-track: rgba(16, 185, 129, 0.14);
+  }
 
   span {
-    transform: rotate(45deg);
     font-size: 2rem;
     font-weight: 700;
     color: #ffffff;
@@ -350,18 +364,11 @@
     align-items: baseline;
     
     small {
-      font-size: 1.2rem;
+      font-size: 1rem;
       margin-left: 2px;
       color: rgba(255, 255, 255, 0.8);
     }
   }
-}
-
-.score-copy {
-  color: #34d399;
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
 }
 
 .gaps-section {
@@ -411,6 +418,10 @@
 }
 
 @media (max-width: 1024px) {
+  .final-report {
+    align-items: flex-start;
+  }
+
   .report-layout {
     grid-template-columns: 1fr;
   }
@@ -418,5 +429,11 @@
   .main-panel {
     border: none;
     padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .final-report {
+    padding: calc(84px + 1.5rem) 1rem 1.5rem;
   }
 }
