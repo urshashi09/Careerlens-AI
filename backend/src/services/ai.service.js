@@ -42,7 +42,8 @@ function getResponseConfig() {
                             intention: {
                                 type: Type.STRING
                             }
-                        }
+                        },
+                        required: ["question", "answer", "intention"]
                     }
                 },
 
@@ -60,7 +61,8 @@ function getResponseConfig() {
                             intention: {
                                 type: Type.STRING
                             }
-                        }
+                        },
+                        required: ["question", "answer", "intention"]
                     }
                 },
 
@@ -76,7 +78,8 @@ function getResponseConfig() {
                                 type: Type.STRING,
                                 enum: ["low", "medium", "high"]
                             }
-                        }
+                        },
+                        required: ["skill", "severity"]
                     }
                 },
 
@@ -97,10 +100,12 @@ function getResponseConfig() {
                                     type: Type.STRING
                                 }
                             }
-                        }
+                        },
+                        required: ["day", "focus", "tasks"]
                     }
                 }
-            }
+            },
+            required: ["jobTitle", "matchScore", "technicalQuestions", "behavioralQuestions", "skillGaps", "preperationPlan"]
         }
     };
 }
@@ -156,7 +161,7 @@ IMPORTANT INSTRUCTIONS:
 - Consider technical skills, experience, projects, communication, and role fit.
 
 2. Technical Questions
-- Generate at least 5 technical interview questions relevant to the job role.
+- Generate at least 10 technical interview questions relevant to the job role.
 - Questions should match the candidate's current level.
 - The "answer" field must contain an IDEAL SAMPLE ANSWER.
 - The answer should teach the candidate how to respond professionally in interviews.
@@ -165,6 +170,7 @@ IMPORTANT INSTRUCTIONS:
 
 3. Behavioral Questions
 - Generate at least 3 behavioral interview questions.
+- For EACH question, you MUST generate all required fields: "question", "answer", and "intention". Do not omit the "question" string!
 - Answers should follow professional interview communication style.
 - Use STAR-method style answers when appropriate.
 
@@ -177,10 +183,11 @@ IMPORTANT INSTRUCTIONS:
 
 5. Preparation Plan
 - Generate a structured 7-day preparation roadmap.
-- Each day should include:
-  - focus area
-  - actionable tasks
-  - interview preparation activities
+- You MUST generate all 7 days in the "preperationPlan" array.
+- For each day, include:
+  - "day": e.g., "Day 1", "Day 2", etc.
+  - "focus": focus area
+  - "tasks": a list of actionable tasks (at least 3 tasks per day)
 
 6. General Rules
 - Answers should be concise, practical, and educational.
@@ -189,8 +196,6 @@ IMPORTANT INSTRUCTIONS:
 `;
 
     const response = await generateContentWithFallback(prompt);
-
-    console.log(response.text);
 
     return JSON.parse(response.text);
 }
