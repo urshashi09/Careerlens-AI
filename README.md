@@ -2,6 +2,11 @@
 
 Careerlens AI is a full-stack AI interview preparation platform that generates personalized interview reports from a candidate's resume, self-description, and target job description. It helps users understand their role fit, practice tailored interview questions, identify skill gaps, and follow a structured preparation roadmap.
 
+## Live Demo
+
+- **Live Application**: [https://careerlens-ai-frontend.onrender.com](https://careerlens-ai-frontend.onrender.com)
+- **Deployed Backend API**: [https://careerlens-ai-backend-amou.onrender.com](https://careerlens-ai-backend-amou.onrender.com)
+
 ## Highlights
 
 - Secure authentication with JWT and cookie-based sessions
@@ -14,6 +19,10 @@ Careerlens AI is a full-stack AI interview preparation platform that generates p
 - 7-day personalized preparation roadmap
 - Report history page for previously generated reports
 - Responsive glassmorphism UI built with React and SCSS
+
+
+## Core Request-Response Workflows
+<img width="100%" alt="Image" src="https://github.com/user-attachments/assets/40f2884b-d4ea-4796-a9d8-981ce4810ad6" />
 
 ## Tech Stack
 
@@ -67,6 +76,8 @@ Create a `.env` file in the `backend` directory:
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 GEMINI_API_KEY=your_gemini_api_key
+PORT=3000
+FRONTEND_URL=http://localhost:5173
 ```
 
 Start the backend server:
@@ -150,4 +161,5 @@ frontend/
 - Gemini responses are requested as structured JSON using a response schema.
 - Skill gap severities are normalized before saving to MongoDB to prevent invalid enum values.
 - Report history is scoped to the authenticated user.
+- Configured backend cookies to set `secure: true` and `sameSite: 'none'` dynamically in production. This allows browsers to securely store credentials across separate frontend and backend domains.
 
