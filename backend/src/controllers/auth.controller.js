@@ -23,7 +23,11 @@ const register= async(req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await userModel.create({ username, email, password: hashedPassword });
     const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, { 
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    });
     res.status(201).json({ message: 'User registered successfully',
      user: {
         id: user._id,
@@ -54,7 +58,11 @@ const login= async(req, res) => {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
     const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie('token', token, { 
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    });
     res.status(200).json({ message: 'User logged in successfully',
      user: {
         id: user._id,
@@ -79,7 +87,11 @@ const logout= async(req, res) => {
     }
     
     await blacklistModel.create({ token });
-    res.clearCookie('token');
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    });
     
     res.status(200).json({ message: 'User logged out successfully' });
 }
